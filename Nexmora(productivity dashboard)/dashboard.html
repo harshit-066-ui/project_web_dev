@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#pomodoro">Pomodoro</a></li>
+        <li><a href="#tasks">Tasks</a></li>
+        <li><a href="#progress">Progress</a></li>
+    </ul>
+</nav>
+
+<section id="home" class="Home">
+    <h2>Dashboard</h2>
+    <p>Total Tasks: <span id="total-tasks">0</span></p>
+    <p>Completed Tasks: <span id="completed-tasks">0</span></p>
+</section>
+
+<section id="pomodoro" class="Pomodoro">
+    <h2>Pomodoro Timer</h2>
+    <p id="timer-display">25:00</p>
+    <button id="start-timer">Start</button>
+    <button id="stop-timer">Stop</button>
+    <button id="reset-timer">Reset</button>
+</section>
+
+<section id="tasks" class="TaskToDo">
+    <h2>Task To-Do</h2>
+    <input id="input-el" type="text" placeholder="Enter Task and set the deadline below">
+    <input id="time-el" type="time" >
+    <input id="date-el" type="date">
+    <button id="input-btn">Add Task</button>
+    <ul id="task"></ul>
+</section>
+
+<section id="progress" class="Progress">
+    <h2>Progress</h2>
+    <canvas id="progress-chart"></canvas>
+    <p id="advice"></p>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
