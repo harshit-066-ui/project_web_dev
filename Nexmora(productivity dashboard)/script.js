@@ -1,4 +1,5 @@
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let focusSeconds = JSON.parse(localStorage.getItem("totalTime")) || 0;
 let clockInterval = null;
 const addTask = document.getElementById("input-el");
 const addTime = document.getElementById("time-el");
@@ -32,11 +33,33 @@ function renderTasks() {
 
     updateDashboard();
 }
-
 function updateDashboard() {
     document.getElementById("total-tasks").textContent = tasks.length;
     document.getElementById("completed-tasks").textContent =
         tasks.filter(task => task.done).length;
+
+    let seconds = focusSeconds;
+    let displayText = "";
+
+    if (seconds >= 3600) {
+        const hours = Math.floor(seconds / 3600);
+        seconds %= 3600;
+        const minutes = Math.floor(seconds / 60);
+        seconds %= 60;
+
+        displayText = `${hours} hours ${minutes} minutes ${seconds} seconds`;
+    } 
+    else if (seconds >= 60) {
+        const minutes = Math.floor(seconds / 60);
+        seconds %= 60;
+
+        displayText = `${minutes} minutes ${seconds} seconds`;
+    } 
+    else {
+        displayText = `${seconds} seconds`;
+    }
+
+    document.getElementById("focus-mode").textContent = displayText;
 }
 
 addBtn.addEventListener("click", function () {
@@ -97,6 +120,7 @@ function updateDisplay() {
 
     document.getElementById("timer-display").textContent =
         hours + ":" + minutes + ":" + seconds;
+    
 }
 
 
@@ -111,25 +135,28 @@ function setTimer() {
 
     totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
     initialSeconds = totalSeconds
+    localStorage.setItem("totalTime",JSON.stringify(initialSeconds))
+
     updateDisplay();
 }
 
 
 StartTimer.addEventListener("click", function () {
-    if (clockInterval !== null) {
-        return;
-    }
+    if (clockInterval !== null) return;
 
     clockInterval = setInterval(function () {
         if (totalSeconds <= 0) {
             clearInterval(clockInterval);
             clockInterval = null;
-            alert("Time's up!");
+            localStorage.setItem("totalTime", JSON.stringify(focusSeconds));
             return;
         }
 
-        totalSeconds = totalSeconds - 1;
+        totalSeconds--;
+        focusSeconds++;
+        localStorage.setItem("totalTime", JSON.stringify(focusSeconds));
         updateDisplay();
+        updateDashboard();
     }, 1000);
 });
 
@@ -153,3 +180,5 @@ UpdateTimer.addEventListener("click", function () {
 });
 
 renderTasks();
+updateDisplay();
+updateDashboard();
