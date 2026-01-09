@@ -63,7 +63,7 @@ section h2 {
     text-align: center;
 }
 
-.Home, .TaskToDo, .Pomodoro, .Progress {
+.Home, .TaskToDo, .FocusMode, .Progress {
     width: 100%;
     min-height: 100vh;
     display: flex;
@@ -127,7 +127,7 @@ input {
     max-width: 90%;
 }
 
-#input-btn , #edit-btn {
+#input-btn {
     padding: 10px 20px;
     margin-top: 10px;
     border: none;
@@ -138,7 +138,7 @@ input {
     font-weight: 500;
 }
 
-button#input-btn:hover {
+#input-btn:hover {
     background: #005f99;
 }
 
@@ -149,20 +149,32 @@ button#input-btn:hover {
     margin: 40px 0;
 }
 
-.Pomodoro button {
+.FocusMode {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.FocusMode button {
     padding: 12px 25px;
-    margin: 10px;
+    min-width: 120px;
     border: none;
     border-radius: 8px;
     background: #007acc;
     color: #fff;
     font-weight: 500;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background 0.3s, transform 0.1s;
+    margin: 5px;
 }
 
-.Pomodoro button:hover {
+.FocusMode button:hover {
     background: #005f99;
+    transform: translateY(-2px);
+}
+
+.FocusMode button:active {
+    transform: translateY(0);
 }
 
 #progress-chart {
@@ -195,5 +207,16 @@ button#input-btn:hover {
 
     .navbar ul {
         gap: 15px;
+    }
+
+    .FocusMode {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .FocusMode button {
+        margin: 5px;
+        flex: 1 1 120px;
     }
 }
