@@ -12,6 +12,7 @@ const StopTimer = document.getElementById("stop-timer");
 const ResetTimer = document.getElementById("reset-timer");
 const UpdateTimer = document.getElementById("update-timer");
 let initialSeconds = 0;
+let SelInd = 0;
 
 
 
@@ -22,7 +23,8 @@ function renderTasks() {
     tasks.forEach((task, index) => {
         taskList.innerHTML += `
         <li 
-        class="${task.done ? "done" : ""}" 
+        class="${task.done ? "done" : ""} ${index === selectedIndex ? "selected" : ""}"
+        onclick="selectTask(${index})" 
         draggable="true" 
         ondragstart="handleDragStart(event, ${index})"
         ondragover="handleDragOver(event)"
@@ -213,6 +215,84 @@ function handleDrop(event, dropIndex) {
 function handleDragEnd(event) {
     event.target.classList.remove("dragging");
 }
+function SelTask(index) {
+    SelInd = index;
+    renderTasks();    
+}
+document.addEventListener("keydown", function (event) {
+
+    switch (event.key) {
+
+        case "Enter":
+            if (addTask.value && addDate.value && addTime.value) {
+                addBtn.click();
+            }
+            break;
+
+        case " ":
+            event.preventDefault();
+            if (clockInterval === null) {
+                StartTimer.click();
+            } else {
+                StopTimer.click();
+            }
+            break;
+
+        case "ArrowDown":
+            if (tasks.length === 0) break;
+
+            if (SelInd === null) {
+                SelInd = 0;
+            } else if (SelInd < tasks.length - 1) {
+                SelInd++;
+            }
+
+            renderTasks();
+            break;
+
+        case "ArrowUp":
+            if (tasks.length === 0) break;
+
+            if (SelInd === null) {
+                SelInd = 0;
+            } else if (SelInd > 0) {
+                SelInd--;
+            }
+
+            renderTasks();
+            break;
+
+        case "Delete":
+            if (SelInd !== null) {
+                deleteTask(SelInd);
+                SelInd = null;
+            }
+            break;
+
+        default:
+
+            if (event.ctrlKey && event.key === "d") {
+                event.preventDefault();
+                addTask.value = "";
+                addDate.value = "";
+                addTime.value = "";
+            }
+
+        
+            if (!event.ctrlKey && event.key === "d") {
+                if (SelInd !== null) {
+                    toggleDone(SelInd);
+                }
+            }
+
+            
+            if (event.key === "e") {
+                if (SelInd !== null) {
+                    editTask(SelInd);
+                }
+            }
+    }
+});
 
 renderTasks();
 updateDisplay();
