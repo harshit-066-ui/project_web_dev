@@ -6,6 +6,7 @@ const addTime = document.getElementById("time-el");
 const addDate = document.getElementById("date-el");
 const addBtn = document.getElementById("input-btn");
 const taskList = document.getElementById("task");
+const button = document.getElementById("mode-toggle");
 
 const StartTimer = document.getElementById("start-timer");
 const StopTimer = document.getElementById("stop-timer");
@@ -217,7 +218,7 @@ function handleDragEnd(event) {
 }
 function SelTask(index) {
     SelInd = index;
-    renderTasks();    
+    renderTasks();
 }
 document.addEventListener("keydown", function (event) {
 
@@ -278,14 +279,14 @@ document.addEventListener("keydown", function (event) {
                 addTime.value = "";
             }
 
-        
+
             if (!event.ctrlKey && event.key === "d") {
                 if (SelInd !== null) {
                     toggleDone(SelInd);
                 }
             }
 
-            
+
             if (event.key === "e") {
                 if (SelInd !== null) {
                     editTask(SelInd);
@@ -293,6 +294,18 @@ document.addEventListener("keydown", function (event) {
             }
     }
 });
+button.addEventListener("click", function () {
+    document.body.classList.toggle('dark');
+    localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+    button.textContent = document.body.classList.contains('dark') ? 'Light Mode' : 'Dark Mode';
+});
+
+
+if (JSON.parse(localStorage.getItem('darkMode'))) {
+    document.body.classList.add('dark');
+    button.textContent = 'Light Mode';
+}
+
 
 renderTasks();
 updateDisplay();
