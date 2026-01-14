@@ -1,281 +1,154 @@
 :root {
-  --bg-color: white;
-  --text-color: black;
-  --navbar-bg: #ffffff;
-  --navbar-link: #555;
-  --navbar-link-hover: #007acc;
-  --button-bg: #007acc;
-  --button-color: #fff;
+  --bg: #ffffff;
+  --text: #111;
+  --accent: #007acc;
+  --card: #f4f6f8;
+  --nav: #ffffff;
 }
 
 .dark {
-  --bg-color: #111;
-  --text-color: #eee;
-  --navbar-bg: #222;
-  --navbar-link: #ccc;
-  --navbar-link-hover: #4CAF50;
-  --button-bg: #4CAF50;
-  --button-color: #111;
+  --bg: #0f1115;
+  --text: #e6e6e6;
+  --accent: #4caf50;
+  --card: #1b1e24;
+  --nav: #16181d;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
   scroll-behavior: smooth;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  transition: background-color 0.3s, color 0.3s;
-}
-
-html {
-  scroll-snap-type: y mandatory;
-  height: 100%;
 }
 
 .navbar {
   position: sticky;
   top: 0;
-  width: 100%;
-  height: 50px;
-  background: var(--navbar-bg);
+  background: var(--nav);
+  height: 56px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 0 20px;
+  justify-content: center;
   z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  gap: 40px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
 .navbar ul {
-  display: flex;
   list-style: none;
-  gap: 40px;
+  display: flex;
+  gap: 30px;
   padding: 0;
   margin: 0;
 }
 
-.navbar li a {
+.navbar a {
   text-decoration: none;
-  color: var(--navbar-link);
+  color: var(--text);
   font-weight: 500;
-  transition: color 0.2s;
-}
-
-.navbar li a:hover {
-  color: var(--navbar-link-hover);
 }
 
 #mode-toggle {
-  padding: 5px 12px;
-  cursor: pointer;
   border: none;
-  border-radius: 5px;
-  background-color: var(--button-bg);
-  color: var(--button-color);
-  font-weight: 500;
-  transition: background 0.3s, color 0.3s, transform 0.1s;
-}
-
-#mode-toggle:hover {
-  transform: translateY(-2px);
-}
-
-#mode-toggle:active {
-  transform: translateY(0);
+  padding: 6px 14px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
 }
 
 section {
-  width: 100vw;
   min-height: 100vh;
+  padding: 80px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: 60px 20px;
-  box-sizing: border-box;
-  scroll-snap-align: start;
 }
 
-section h2 {
-  font-size: 3rem;
-  color: var(--text-color);
-  margin-bottom: 40px;
-  text-align: center;
-}
-
-.Home, .TaskToDo, .FocusMode, .Progress {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
+h2 {
+  font-size: 2.5rem;
+  margin-bottom: 30px;
 }
 
 .Home p {
-  font-size: 1.5rem;
-  color: #007acc;
+  font-size: 1.3rem;
   margin: 10px 0;
-}
-
-#task {
-  list-style: none;
-  padding-left: 0;
-  width: 70%;
-  max-width: 900px;
-  margin-top: 20px;
-}
-
-#task li {
-  background: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  transition: background-color 0.2s, border 0.2s, transform 0.2s, box-shadow 0.2s;
-  cursor: grab;
-}
-
-#task li.done {
-  text-decoration: line-through;
-  color: gray;
-}
-
-#task li.dragging {
-  opacity: 0.5;
-  background-color: #f0f0f0;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
-
-#task li.drag-over {
-  border: 2px dashed #4CAF50;
-  background-color: #e0ffe0;
-}
-
-#task li:active {
-  cursor: grabbing;
-}
-
-#task button {
-  margin-top: 8px;
-  width: 100px;
-  padding: 6px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background 0.2s;
-  background: #007acc;
-  color: #fff;
-}
-
-#task button:hover {
-  background: #005f99;
-}
-
-input {
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  width: 250px;
-  max-width: 90%;
-}
-
-#input-btn {
-  padding: 10px 20px;
-  margin-top: 10px;
-  border: none;
-  border-radius: 5px;
-  background: #007acc;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-#input-btn:hover {
-  background: #005f99;
-}
-
-#timer-display {
-  font-size: 10vw;
-  text-align: center;
-  color: #007acc;
-  margin: 40px 0;
+  color: var(--accent);
 }
 
 .FocusMode {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: center;
 }
 
-.FocusMode button {
-  padding: 12px 25px;
-  min-width: 120px;
+#timer-display {
+  font-size: 6rem;
+  margin: 30px 0;
+  color: var(--accent);
+}
+
+.controls button,
+#add-task,
+#export-json {
+  padding: 10px 18px;
+  margin: 6px;
   border: none;
   border-radius: 8px;
-  background: #007acc;
+  background: var(--accent);
   color: #fff;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.3s, transform 0.1s;
-  margin: 5px;
 }
 
-.FocusMode button:hover {
-  background: #005f99;
-  transform: translateY(-2px);
+.TaskToDo input {
+  padding: 10px;
+  margin: 6px;
+  width: 240px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
 
-.FocusMode button:active {
-  transform: translateY(0);
-}
-
-#progress-chart {
-  width: 70%;
+#task-list {
+  width: 80%;
   max-width: 900px;
-  height: 300px;
+  list-style: none;
+  padding: 0;
+  margin-top: 30px;
 }
 
-#advice {
-  font-size: 1.2rem;
-  color: #007acc;
-  font-weight: 500;
-  text-align: center;
-  margin-top: 20px;
+#task-list li {
+  background: var(--card);
+  padding: 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  cursor: grab;
+  display: flex;
+  flex-direction: column;
 }
+
+#task-list li.done {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+#task-list button {
+  margin-top: 6px;
+  width: fit-content;
+}
+
+
 
 @media (max-width: 768px) {
   #timer-display {
-    font-size: 20vw;
+    font-size: 4rem;
   }
 
-  #task li {
-    font-size: 0.9rem;
-    width: 90%;
-  }
-
-  section {
-    padding: 60px 10px;
-  }
-
-  .navbar ul {
-    gap: 15px;
-  }
-
-  .FocusMode {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .FocusMode button {
-    margin: 5px;
-    flex: 1 1 120px;
+  #task-list {
+    width: 95%;
   }
 }
+
