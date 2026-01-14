@@ -1,33 +1,31 @@
-import { tasks, setDraggedTask, getDraggedTask, setSelectedTask } from "./global.js";
+import { state, taskList } from "./global.js";
 import * as taskFn from "./task.js";
 
+let draggedIndex = null;
+
 export function handleDragStart(e, index) {
-    setDraggedTask(index);
-    e.currentTarget.classList.add("dragging");
+  draggedIndex = index;
+  e.currentTarget.classList.add("dragging");
 }
 
 export function handleDragOver(e) {
-    e.preventDefault();
-    e.currentTarget.classList.add("drag-over");
+  e.preventDefault();
+  e.currentTarget.classList.add("drag-over");
 }
 
 export function handleDrop(e, dropIndex) {
-    e.preventDefault();
-    const dragged = getDraggedTask();
-    if (dragged === null || dragged === dropIndex) return;
+  e.preventDefault();
+  if (draggedIndex === null || draggedIndex === dropIndex) return;
 
-    const moved = tasks.splice(dragged, 1)[0];
-    tasks.splice(dropIndex, 0, moved);
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-    setDraggedTask(null);
-    taskFn.renderTasks(taskFn); // pass required functions
+  const movedTask = state.tasks.splice(draggedIndex, 1)[0];
+  state.tasks.splice(dropIndex, 0, movedTask);
+
+  draggedIndex = null;
+  localStorage.setItem("tasks", JSON.stringify(state.tasks));
+  taskFn.renderTasks(() => {});
 }
 
 export function handleDragEnd(e) {
-    e.currentTarget.classList.remove("dragging");
+  e.currentTarget.classList.remove("dragging");
+  Array.from(taskList.children).forEach(li => li.classList.remove("drag-over"));
 }
-
-export function selectTask(index) {
-    setSelectedTask(index);
-}
-
