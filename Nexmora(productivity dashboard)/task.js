@@ -1,54 +1,46 @@
-import { state, taskList } from "./global.js";
+import * as taskFn from "./task.js";
+import * as timeFn from "./time.js";
+import * as util from "./util.js";
+import { state, taskInput, dateInput, timeInput, addButton, startButton, stopButton, resetButton, updateButton, darkButton } from "./global.js";
+import { updateDashboard } from "./dashboard.js";
 
-export function renderTasks(updateDashboard) {
-  taskList.innerHTML = "";
-  state.tasks.forEach((task, i) => {
-    const li = document.createElement("li");
-    li.className = task.done ? "done" : "";
-    if (i === state.selectedTask) li.classList.add("selected");
-    li.draggable = true;
-    li.innerHTML = `
-      <strong>${task.text}</strong><br>
-      📅 ${task.date} ⏰ ${task.time}<br>
-      <button class="done-btn">${task.done ? "Undo" : "Done"}</button>
-      <button class="edit-btn">Edit</button>
-      <button class="delete-btn">Delete</button>
-    `;
-    li.querySelector(".done-btn").onclick = e => { e.stopPropagation(); toggleTaskDone(i, updateDashboard); };
-    li.querySelector(".edit-btn").onclick = e => { e.stopPropagation(); editTask(i, updateDashboard); };
-    li.querySelector(".delete-btn").onclick = e => { e.stopPropagation(); removeTask(i, updateDashboard); };
-    li.onclick = () => state.selectedTask = i;
-    taskList.appendChild(li);
-  });
-  updateDashboard();
-}
+// --- Initial rendering ---
+taskFn.renderTasks(updateDashboard);
+timeFn.updateTimerDisplay();
+updateDashboard();
 
-export function addTask(task, updateDashboard) {
-  state.tasks.push(task);
-  localStorage.setItem("tasks", JSON.stringify(state.tasks));
-  renderTasks(updateDashboard);
-}
+// --- Add Task ---
+addButton.onclick = util.debounce(() => {
+  if (!taskInput.value || !dateInput.value || !timeInput.value) return;
+  taskFn.addTask({
+    text: taskInput.value.trim(),
+    date: dateInput.value,
+    time: timeInput.value,
+    done: false
+  }, () => { updateDashboard(); });
+  taskInput.value = dateInput.value = timeInput.value = "";
+}, 300);
 
-export function removeTask(i, updateDashboard) {
-  state.tasks.splice(i, 1);
-  if (state.selectedTask === i) state.selectedTask = null;
-  localStorage.setItem("tasks", JSON.stringify(state.tasks));
-  renderTasks(updateDashboard);
-}
+// --- Timer controls ---
+startButton.onclick = () => timeFn.startClock(() => { updateDashboard(); });
+stopButton.onclick = () => timeFn.stopClock();
+resetButton.onclick = () => { timeFn.resetClock(); };
+updateButton.onclick = () => timeFn.setTimer();
 
-export function toggleTaskDone(i, updateDashboard) {
-  state.tasks[i].done = !state.tasks[i].done;
-  localStorage.setItem("tasks", JSON.stringify(state.tasks));
-  renderTasks(updateDashboard);
+darkButton.onclick = () => {
+  document.body.classList.toggle("dark");
+  localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+  darkButton.textContent = document.body.classList.contains("dark") ? "Light Mode" : "Dark Mode";
+};
+if (JSON.parse(localStorage.getItem("darkMode"))) {
+  document.body.classList.add("dark");
+  darkButton.textContent = "Light Mode";
 }
-
-export function editTask(i, updateDashboard) {
-  const t = state.tasks[i];
-  const text = prompt("Task?", t.text);
-  const date = prompt("Date?", t.date);
-  const time = prompt("Time?", t.time);
-  if (!text || !date || !time) return;
-  t.text = text; t.date = date; t.time = time;
-  localStorage.setItem("tasks", JSON.stringify(state.tasks));
-  renderTasks(updateDashboard);
-}
+document.getElementById("export-json").onclick = () => util.exportJSON(state.tasks)
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter") addButton.click();
+  if (e.ctrlKey && e.key.toLowerCase() === "d") {
+    const selected = state.selectedTask;
+    if (selected !== null) taskFn.toggleTaskDone(selected, () => { updateDashboard(); });
+  }
+});
