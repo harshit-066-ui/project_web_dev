@@ -1,37 +1,47 @@
 import { useState, useRef } from "react";
-import { useDrag } from "react-dnd";
-import type { Card as CardType } from "./types";
+import { useDrag, useDrop } from "react-dnd";
+import type { Card as CardType, Priority } from "./types";
 
 interface CardProps {
   cardData: CardType;
   columnId: number;
-  onEdit: (columnId: number, cardId: number, title: string, description: string) => void;
+  index: number;
+  onEdit: (columnId: number, cardId: number, title: string, description: string, priority?: Priority) => void;
   onDelete: (columnId: number, cardId: number) => void;
+  onMoveCardWithinColumn?: (columnId: number, dragIndex: number, hoverIndex: number) => void;
 }
 
-function Card({ cardData, columnId, onEdit, onDelete }: CardProps) {
+function Card({ cardData, columnId, index, onEdit, onDelete, onMoveCardWithinColumn }: CardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(cardData.title);
   const [description, setDescription] = useState(cardData.description);
+  const [priority, setPriority] = useState<Priority | undefined>(cardData.priority);
 
-  
   const ref = useRef<HTMLDivElement>(null);
 
+  const [, drop] = useDrop({
+    accept: "CARD",
+    hover: (item: { cardId: number; sourceColumnId: number; index: number }) => {
+      if (!ref.current || !onMoveCardWithinColumn) return;
+      if (item.index === index && item.sourceColumnId === columnId) return;
+      if (item.sourceColumnId === columnId) {
+        onMoveCardWithinColumn(columnId, item.index, index);
+        item.index = index;
+      }
+    },
+  });
 
   const [{ isDragging }, drag] = useDrag({
     type: "CARD",
-    item: { cardId: cardData.id, sourceColumnId: columnId },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
+    item: { cardId: cardData.id, sourceColumnId: columnId, index },
+    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   });
 
-
-  drag(ref);
+  drag(drop(ref));
 
   const handleSave = () => {
     if (title.trim() && description.trim()) {
-      onEdit(columnId, cardData.id, title, description);
+      onEdit(columnId, cardData.id, title, description, priority);
       setIsEditing(false);
     }
   };
@@ -44,7 +54,8 @@ function Card({ cardData, columnId, onEdit, onDelete }: CardProps) {
         borderRadius: "6px",
         padding: "8px",
         marginBottom: "8px",
-        backgroundColor: "#fff",
+        backgroundColor:
+          priority === "red" ? "#ffcccc" : priority === "orange" ? "#ffe5cc" : priority === "yellow" ? "#ffffcc" : "#fff",
         opacity: isDragging ? 0.5 : 1,
         cursor: "grab",
       }}
@@ -63,6 +74,16 @@ function Card({ cardData, columnId, onEdit, onDelete }: CardProps) {
             onChange={(e) => setDescription(e.target.value)}
             style={{ display: "block", marginBottom: "4px", width: "100%" }}
           />
+          <select
+            value={priority || ""}
+            onChange={(e) => setPriority(e.target.value as Priority)}
+            style={{ display: "block", marginBottom: "4px", width: "100%" }}
+          >
+            <option value="">No Priority</option>
+            <option value="red">Urgent (Red)</option>
+            <option value="orange">Essential (Orange)</option>
+            <option value="yellow">Optional (Yellow)</option>
+          </select>
           <button onClick={handleSave} style={{ marginRight: "4px" }}>
             Save
           </button>
