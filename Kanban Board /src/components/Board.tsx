@@ -10,6 +10,8 @@ function Board() {
   ]);
 
   const [nextCardId, setNextCardId] = useState(1);
+  const [searchText, setSearchText] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState<Priority | "">("");
 
   const addCard = (columnId: number, title: string, description: string, priority?: Priority) => {
     const newCard: Card = { id: nextCardId, title, description, priority };
@@ -52,19 +54,50 @@ function Board() {
     }));
   };
 
+  const filteredColumns = columns.map(col => ({
+    ...col,
+    cards: col.cards.filter(card => {
+      const matchesTitle = card.title.toLowerCase().includes(searchText.toLowerCase());
+      const matchesPriority = priorityFilter ? card.priority === priorityFilter : true;
+      return matchesTitle && matchesPriority;
+    }),
+  }));
+
   return (
-    <div style={{ display: "flex", padding: "16px", gap: "16px", overflowX: "auto" }}>
-      {columns.map(col => (
-        <Column
-          key={col.id}
-          columnData={col}
-          onAddCard={addCard}
-          onEditCard={editCard}
-          onDeleteCard={deleteCard}
-          onMoveCard={moveCard}
-          onMoveCardWithinColumn={moveCardWithinColumn}
+    <div style={{ padding: "16px" }}>
+      <div style={{ marginBottom: "16px" }}>
+        <input
+          type="text"
+          placeholder="Search by title..."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          style={{ marginRight: "8px", padding: "4px" }}
         />
-      ))}
+        <select
+          value={priorityFilter}
+          onChange={(e) => setPriorityFilter(e.target.value as Priority | "")}
+          style={{ padding: "4px" }}
+        >
+          <option value="">All Priorities</option>
+          <option value="red">Urgent (Red)</option>
+          <option value="orange">Essential (Orange)</option>
+          <option value="yellow">Optional (Yellow)</option>
+        </select>
+      </div>
+
+      <div style={{ display: "flex", gap: "16px", overflowX: "auto" }}>
+        {filteredColumns.map(col => (
+          <Column
+            key={col.id}
+            columnData={col}
+            onAddCard={addCard}
+            onEditCard={editCard}
+            onDeleteCard={deleteCard}
+            onMoveCard={moveCard}
+            onMoveCardWithinColumn={moveCardWithinColumn}
+          />
+        ))}
+      </div>
     </div>
   );
 }
