@@ -6,12 +6,12 @@ interface CardProps {
   cardData: CardType;
   columnId: number;
   index: number;
-  onEdit: (columnId: number, cardId: number, title: string, description: string, priority?: Priority) => void;
   onDelete: (columnId: number, cardId: number) => void;
   onMoveCardWithinColumn?: (columnId: number, dragIndex: number, hoverIndex: number) => void;
+  onClick: () => void;
 }
 
-function Card({ cardData, columnId, index, onEdit, onDelete, onMoveCardWithinColumn }: CardProps) {
+function Card({ cardData, columnId, index,  onDelete, onMoveCardWithinColumn }: CardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(cardData.title);
   const [description, setDescription] = useState(cardData.description);
@@ -41,7 +41,7 @@ function Card({ cardData, columnId, index, onEdit, onDelete, onMoveCardWithinCol
 
   const handleSave = () => {
     if (title.trim() && description.trim()) {
-      onEdit(columnId, cardData.id, title, description, priority);
+     
       setIsEditing(false);
     }
   };
