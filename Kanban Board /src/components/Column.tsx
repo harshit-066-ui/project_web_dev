@@ -1,7 +1,8 @@
 import { useState, useRef } from "react";
 import { useDrop } from "react-dnd";
 import Card from "./Card";
-import type { Column as ColumnTypeEnum, Priority } from "./types";
+import CardModal from "./Modal";
+import type { Column as ColumnTypeEnum, Priority, Card as CardType } from "./types";
 
 interface ColumnProps {
   columnData: ColumnTypeEnum;
@@ -20,29 +21,21 @@ function Column({
   onMoveCard,
   onMoveCardWithinColumn,
 }: ColumnProps) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [priority, setPriority] = useState<Priority | undefined>(undefined);
   const ref = useRef<HTMLDivElement>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<CardType | undefined>(undefined);
 
   const [{ isOver }, drop] = useDrop({
     accept: "CARD",
     drop: (item: { cardId: number; sourceColumnId: number }) => {
-      if (item.sourceColumnId !== columnData.id) onMoveCard(item.cardId, item.sourceColumnId, columnData.id);
+      if (item.sourceColumnId !== columnData.id) {
+        onMoveCard(item.cardId, item.sourceColumnId, columnData.id);
+      }
     },
-    collect: (monitor) => ({ isOver: monitor.isOver() }),
+    collect: monitor => ({ isOver: monitor.isOver() }),
   });
 
   drop(ref);
-
-  const handleAdd = () => {
-    if (title.trim() && description.trim()) {
-      onAddCard(columnData.id, title, description, priority);
-      setTitle("");
-      setDescription("");
-      setPriority(undefined);
-    }
-  };
 
   return (
     <div
@@ -53,7 +46,6 @@ function Column({
         borderRadius: "6px",
         minWidth: "250px",
         backgroundColor: isOver ? "#f0f8ff" : "#fff",
-        transition: "background-color 0.2s",
       }}
     >
       <h2>{columnData.title}</h2>
@@ -64,40 +56,39 @@ function Column({
           cardData={card}
           columnId={columnData.id}
           index={index}
-          onEdit={onEditCard}
           onDelete={onDeleteCard}
           onMoveCardWithinColumn={onMoveCardWithinColumn}
+          onClick={() => {
+            setSelectedCard(card);
+            setIsModalOpen(true);
+          }}
         />
       ))}
 
-      <input
-        type="text"
-        placeholder="Card title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        style={{ display: "block", marginBottom: "4px", width: "100%" }}
-      />
-      <input
-        type="text"
-        placeholder="Card description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        style={{ display: "block", marginBottom: "4px", width: "100%" }}
-      />
-      <select
-        value={priority || ""}
-        onChange={(e) => setPriority(e.target.value as Priority)}
-        style={{ display: "block", marginBottom: "4px", width: "100%" }}
+      <button
+        onClick={() => {
+          setSelectedCard(undefined);
+          setIsModalOpen(true);
+        }}
+        style={{ width: "100%", marginTop: "8px" }}
       >
-        <option value="">No Priority</option>
-        <option value="red">Urgent (Red)</option>
-        <option value="orange">Essential (Orange)</option>
-        <option value="yellow">Optional (Yellow)</option>
-      </select>
-      <button onClick={handleAdd}>Add Card</button>
+        Add Card
+      </button>
+
+      <CardModal
+        isOpen={isModalOpen}
+        initialData={selectedCard}
+        onClose={() => setIsModalOpen(false)}
+        onSave={(title, description, priority) => {
+          if (selectedCard) {
+            onEditCard(columnData.id, selectedCard.id, title, description, priority);
+          } else {
+            onAddCard(columnData.id, title, description, priority);
+          }
+        }}
+      />
     </div>
   );
 }
 
 export default Column;
-
